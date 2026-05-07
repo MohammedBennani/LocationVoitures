@@ -53,13 +53,28 @@ Route::middleware('auth')->group(function () {
     });
 
     // Gestion des Réservations
-    Route::controller(ReservationController::class)->group(function () {
-        Route::get('/reservations', 'index')->name('reservations.index');
-        Route::get('/reservations/create', 'create')->name('reservations.create');
-        Route::post('/reservations', 'store')->name('reservations.store');
-        Route::get('/reservations/{id}', 'show')->name('reservations.show');
-        Route::get('/reservations/{reservation}/edit', 'edit')->name('reservations.edit');
-        Route::put('/reservations/{reservation}', 'update')->name('reservations.update');
-    });
+Route::controller(ReservationController::class)->group(function () {
+
+    Route::get('/reservations', 'index')
+        ->name('reservations.index');
+
+    Route::get('/reservations/create', 'create')
+        ->name('reservations.create');
+
+    Route::post('/reservations', 'store')
+        ->name('reservations.store');
+
+    Route::get('/reservations/{id}', 'show')
+        ->name('reservations.show');
+
+    Route::delete('/reservations/{id}', 'destroy')
+        ->name('reservations.destroy');
+
+    Route::patch('/reservations/{id}/restore', 'restore')
+        ->name('reservations.restore');
+
+    Route::delete('/reservations/{id}/force-delete', 'forceDelete')
+        ->name('reservations.forceDelete');
+});
 
 });

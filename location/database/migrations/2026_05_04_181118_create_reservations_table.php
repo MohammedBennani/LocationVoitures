@@ -13,16 +13,29 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();//auth()->id()
-            $table->foreignUuid('client_id')->constrained('clients')->cascadeOnDelete();
-            $table->foreignUuid('car_id')->constrained('cars')->cascadeOnDelete();
+
+            $table->foreignUuid('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignUuid('client_id')
+                ->constrained('clients')
+                ->cascadeOnDelete();
+
+            $table->foreignUuid('car_id')
+                ->constrained('cars')
+                ->cascadeOnDelete();
+
             $table->date('date_start');
             $table->date('date_end');
+
             $table->decimal('price', 8, 2);
+
             $table->timestamps();
+
+            $table->softDeletes(); // deleted_at
         });
     }
-
     /**
      * Reverse the migrations.
      */

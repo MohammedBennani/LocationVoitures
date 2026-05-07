@@ -1,81 +1,217 @@
 @extends('_layout')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
+
+<div class="flex justify-between items-start mb-6">
+
     <div>
         <h2 class="text-2xl font-bold text-gray-800">Gestion des Contrats</h2>
-        <p class="text-gray-600 text-sm">Liste de toutes les réservations et locations en cours.</p>
+        <p class="text-gray-600 text-sm">
+            Liste des réservations avec filtres avancés
+        </p>
     </div>
-    <a href="{{ route('reservations.create') }}" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-all">
-        <i data-lucide="plus-circle" class="w-5 h-5"></i> Nouveau Contrat
-    </a>
+
+    <div class="flex gap-3 flex-wrap">
+
+        {{-- Tous --}}
+        <a href="{{ route('reservations.index') }}"
+           class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 shadow">
+            Tous
+        </a>
+
+        {{-- Actives --}}
+        <a href="{{ route('reservations.index', ['filter' => 'active']) }}"
+           class="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 shadow flex items-center gap-2">
+            Actives
+        </a>
+
+        {{-- Historique --}}
+        <a href="{{ route('reservations.index', ['filter' => 'historique']) }}"
+           class="bg-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800 shadow flex items-center gap-2">
+            Historique
+        </a>
+
+        {{-- Nouveau --}}
+        <a href="{{ route('reservations.create') }}"
+           class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 shadow flex items-center gap-2">
+            Nouveau
+        </a>
+
+    </div>
+
 </div>
 
-<div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+{{-- 🔎 SEARCH CIN --}}
+<form method="GET" action="{{ route('reservations.index') }}" class="mb-5">
+
+    <div class="flex gap-2 items-center">
+
+        <input type="text"
+               name="cin"
+               value="{{ request('cin') }}"
+               placeholder="Recherche par CIN..."
+               class="border border-gray-300 rounded-xl px-4 py-2 w-72 focus:ring-2 focus:ring-blue-500">
+
+        <button type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700">
+            Rechercher
+        </button>
+
+        @if(request('cin'))
+            <a href="{{ route('reservations.index') }}"
+               class="bg-gray-500 text-white px-4 py-2 rounded-xl hover:bg-gray-600">
+                Reset
+            </a>
+        @endif
+
+    </div>
+
+</form>
+
+{{-- TABLE --}}
+<div class="bg-white shadow-xl rounded-2xl overflow-hidden border">
+
     <table class="w-full text-left border-collapse">
-        <thead class="bg-gray-50 border-b border-gray-100">
+
+        <thead class="bg-gray-50">
             <tr>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Référence</th>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Client</th>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Véhicule</th>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Période</th>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Prix Total</th>
-                <th class="p-4 font-bold text-gray-700 text-sm uppercase">Actions</th>
+                <th class="p-4">Réf</th>
+                <th class="p-4">Client</th>
+                <th class="p-4">Voiture</th>
+                <th class="p-4">Période</th>
+                <th class="p-4">Prix</th>
+                <th class="p-4">Statut</th>
+                <th class="p-4">Actions</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-50">
-            @forelse($reservations as $reservation)
-            <tr class="hover:bg-blue-50/30 transition-colors">
-                <td class="p-4">
-                    <span class="font-mono text-sm font-bold text-blue-600">#RES-{{ $reservation->id }}</span>
+
+        <tbody>
+
+        @forelse($reservations as $reservation)
+
+            <tr class="border-b hover:bg-gray-50">
+
+                {{-- REF --}}
+                <td class="p-4 font-mono text-blue-600 font-bold">
+                    #RES-{{ $reservation->id }}
                 </td>
+
+                {{-- CLIENT --}}
                 <td class="p-4">
                     <div class="flex flex-col">
-                        <span class="font-semibold text-gray-800">{{ $reservation->client->name }}</span>
-                        <span class="text-xs text-gray-500">{{ $reservation->client->national_id }}</span>
+                        <span class="font-semibold text-gray-800">
+                            {{ $reservation->client->name }}
+                        </span>
+                        <span class="text-xs text-gray-500">
+                            {{ $reservation->client->national_id }}
+                        </span>
                     </div>
                 </td>
-                <td class="p-4 text-gray-700 text-sm">
+
+                {{-- CAR --}}
+                <td class="p-4">
                     {{ $reservation->car->brand }} {{ $reservation->car->model }}
-                    <div class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded w-fit mt-1">{{ $reservation->car->registration }}</div>
-                </td>
-                <td class="p-4 text-sm">
-                    <div class="flex flex-col">
-                        <span class="flex items-center gap-1 text-green-600 font-medium">
-                            <i data-lucide="calendar-arrow-right" class="w-3 h-3"></i> {{ \Carbon\Carbon::parse($reservation->date_start)->format('d/m/Y') }}
-                        </span>
-                        <span class="flex items-center gap-1 text-red-500 font-medium">
-                            <i data-lucide="calendar-arrow-down" class="w-3 h-3"></i> {{ \Carbon\Carbon::parse($reservation->date_end)->format('d/m/Y') }}
-                        </span>
+                    <div class="text-xs text-gray-500">
+                        {{ $reservation->car->registration }}
                     </div>
                 </td>
-                <td class="p-4">
-                    <span class="text-lg font-bold text-gray-900">{{ number_format($reservation->price, 2) }} DH</span>
+
+                {{-- PERIOD --}}
+                <td class="p-4 text-sm">
+                    <div class="text-green-600">
+                        {{ \Carbon\Carbon::parse($reservation->date_start)->format('d/m/Y') }}
+                    </div>
+                    <div class="text-red-500">
+                        {{ \Carbon\Carbon::parse($reservation->date_end)->format('d/m/Y') }}
+                    </div>
                 </td>
+
+                {{-- PRICE --}}
+                <td class="p-4 font-bold">
+                    {{ number_format($reservation->price, 2) }} DH
+                </td>
+
+                {{-- STATUS --}}
                 <td class="p-4">
+                    @if($reservation->deleted_at)
+                        <span class="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-full">
+                            Historique
+                        </span>
+                    @else
+                        <span class="px-3 py-1 text-xs bg-green-100 text-green-600 rounded-full">
+                            Active
+                        </span>
+                    @endif
+                </td>
+
+                {{-- ACTIONS --}}
+                <td class="p-4">
+
                     <div class="flex gap-2">
-                        <a href="{{ route('reservations.show', $reservation->id) }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600" title="Voir le contrat">
+
+                        {{-- DETAIL --}}
+                        <a href="{{ route('reservations.show', $reservation->id) }}"
+                           class="bg-gray-500 text-white px-3 py-2 rounded-lg text-sm">
                             Detail
                         </a>
-                        <a href="{{ route('reservations.edit', $reservation->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Modifier</a>
-                        <button class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Imprimer">
-                            <i data-lucide="printer" class="w-5 h-5"></i>
-                        </button>
+
+                        {{-- DELETED --}}
+                        @if($reservation->deleted_at)
+
+                            {{-- RESTORE --}}
+                            <form action="{{ route('reservations.restore', $reservation->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+
+                                <button class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm">
+                                    Restore
+                                </button>
+                            </form>
+
+                            {{-- FORCE DELETE --}}
+                            <form action="{{ route('reservations.forceDelete', $reservation->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm">
+                                    Delete
+                                </button>
+                            </form>
+
+                        @else
+
+                            {{-- SOFT DELETE --}}
+                            <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm">
+                                    Supprimer
+                                </button>
+                            </form>
+
+                        @endif
+
                     </div>
+
                 </td>
+
             </tr>
-            @empty
+
+        @empty
+
             <tr>
-                <td colspan="6" class="p-12 text-center">
-                    <div class="flex flex-col items-center">
-                        <i data-lucide="folder-open" class="w-12 h-12 text-gray-300 mb-3"></i>
-                        <p class="text-gray-500">Aucune réservation enregistrée pour le moment.</p>
-                        <a href="{{ route('reservations.create') }}" class="text-blue-600 hover:underline mt-2">Créer votre premier contrat</a>
-                    </div>
+                <td colspan="7" class="text-center py-10 text-gray-500">
+                    Aucune réservation trouvée
                 </td>
             </tr>
-            @endforelse
+
+        @endforelse
+
         </tbody>
+
     </table>
+
 </div>
+
 @endsection
