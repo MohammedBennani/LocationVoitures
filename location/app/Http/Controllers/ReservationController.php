@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Car;
 use App\Models\Client;
-use App\Models\User; 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
@@ -19,41 +19,68 @@ class ReservationController extends Controller
 {
     // On récupère les réservations avec les infos du client et de la voiture
     // pour éviter le problème du "N+1 query"N
-    $reservations = Reservation::with(['client', 'car', 'user'])->latest()->get();
+    $reservations = Reservation::all();
+    // dd($reservations);
     return view('reservations.index', compact('reservations'));
 }
 
     public function create()
     {
         // On ne récupère que les voitures 'disponible'
-        $cars = Car::where('status', 'disponible')->get();
-        $clients = Client::all();
-
-        return view('reservations.create', compact('cars', 'clients'));
+        return view('reservations.create');
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'client_id'    => 'required|exists:clients,id',
-            'car_id'      => 'required|exists:cars,id',
-            'date_start'  => 'required|date|after_or_equal:today',
-            'date_end'    => 'required|date|after:date_start',
-            'price'       => 'required|numeric',
+public function store(Request $request)
+{
+    $request->validate([
+    'national_id' => 'required|exists:clients,national_id',
+    'registration' => 'required|exists:cars,registration',
+    'date_start' => 'required|date|after_or_equal:today',
+    'date_end' => 'required|date|after:date_start',
+    'price' => 'required|numeric',
+], [
+    'national_id.required' => 'Le numéro d’identification est obligatoire',
+    'national_id.exists' => 'Client introuvable',
+
+    'registration.required' => 'La plaque du véhicule est obligatoire',
+    'registration.exists' => 'Voiture introuvable',
+
+    'date_start.required' => 'La date de début est obligatoire',
+    'date_start.date' => 'Format de date invalide',
+    'date_start.after_or_equal' => 'La date de début doit être aujourd’hui ou après',
+
+    'date_end.required' => 'La date de fin est obligatoire',
+    'date_end.date' => 'Format de date invalide',
+    'date_end.after' => 'La date de fin doit être après la date de début',
+
+    'price.required' => 'Le prix est obligatoire',
+    'price.numeric' => 'Le prix doit être un nombre valide',
+]);
+
+    $car = Car::where('registration', $request->registration)->firstOrFail();
+    $client = Client::where('national_id', $request->national_id)->firstOrFail();
+
+    if ($car->status === 'loué') {
+        return back()->with('error', 'Cette voiture est déjà louée');
+    }
+
+    DB::transaction(function () use ($request, $car, $client) {
+        Reservation::create([
+            'user_id' => Auth::id(),
+            'client_id' => $client->id,
+            'car_id' => $car->id,
+            'date_start' => $request->date_start,
+            'date_end' => $request->date_end,
+            'price' => $request->price,
         ]);
 
-        // Utilisation de Auth pour l'ID de l'employé connecté
-        $validated['user_id'] = Auth::id();
-
-        // Création de la réservation
-        $reservation = Reservation::create($validated);
-
-        // Mise à jour du statut de la voiture
-        $car = Car::find($request->car_id);
         $car->update(['status' => 'loué']);
+    });
 
-        return redirect()->route('reservations.index')->with('success', 'Contrat créé !');
-    }
+    return redirect()
+        ->route('reservations.index')
+        ->with('success', 'Contrat créé !');
+}
 
 
 

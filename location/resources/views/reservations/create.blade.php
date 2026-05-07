@@ -3,112 +3,180 @@
 @section('content')
 
 <div class="max-w-4xl mx-auto">
-    <!-- Fil d'Ariane / Titre -->
+
+    <!-- Titre -->
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Créer un Nouveau Contrat</h2>
         <p class="text-gray-600">Remplissez les informations pour générer la réservation.</p>
     </div>
 
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+
         <form action="{{ route('reservations.store') }}" method="POST" class="p-8">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <!-- Sélection du Client -->
-                <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <i data-lucide="user" class="w-4 h-4"></i> Client
+
+                <!-- CIN -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Client (CIN / ID)
                     </label>
-                    <select name="client_id" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50">
-                        <option value="" disabled selected>Choisir un client</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}">{{ $client->name }} ({{ $client->national_id }})</option>
-                        @endforeach
-                    </select>
+
+                    <input type="text" name="national_id"
+                        value="{{ old('national_id') }}"
+                        class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50
+                        @error('national_id') border-red-500 @enderror">
+
+                    @error('national_id')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Sélection de la Voiture -->
-                <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <i data-lucide="car" class="w-4 h-4"></i> Véhicule
+                <!-- Registration -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Véhicule (Plaque)
                     </label>
-                    <select name="car_id" id="car_select" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50">
-                        <option value="" disabled selected>Choisir une voiture</option>
-                        @foreach($cars as $car)
-                            <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
-                                {{ $car->brand }} {{ $car->model }} ({{ $car->registration }})
-                            </option>
-                        @endforeach
-                    </select>
+
+                    <input type="text" name="registration"
+                        value="{{ old('registration') }}"
+                        class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50
+                        @error('registration') border-red-500 @enderror">
+
+                    @error('registration')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Date de début -->
-                <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <i data-lucide="calendar" class="w-4 h-4"></i> Date de début
+                <!-- Date Start -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Date de début
                     </label>
-                    <input type="date" name="date_start" id="date_start" 
-                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50">
+
+                    <input type="date" name="date_start" id="date_start"
+                        value="{{ old('date_start') }}"
+                        class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50
+                        @error('date_start') border-red-500 @enderror">
+
+                    @error('date_start')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Date de fin -->
-                <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <i data-lucide="calendar-check" class="w-4 h-4"></i> Date de fin
+                <!-- Date End -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Date de fin
                     </label>
+
                     <input type="date" name="date_end" id="date_end"
-                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50">
+                        value="{{ old('date_end') }}"
+                        class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50
+                        @error('date_end') border-red-500 @enderror">
+
+                    @error('date_end')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Prix Total -->
-                <div class="col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100 mt-2">
-                    <label class="block text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                        <i data-lucide="banknote" class="w-5 h-5"></i> Prix Total Estimé (DH)
+                <!-- Prix par jour -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Prix par jour (DH)
                     </label>
-                    <input type="number" name="price" id="total_price" step="0.01" readonly
-                        class="w-full bg-white border-blue-200 rounded-lg text-xl font-bold text-blue-700 p-3 shadow-inner cursor-not-allowed">
-                    <p class="text-xs text-blue-600 mt-2 italic">* Le prix est calculé automatiquement selon la durée et le tarif journalier.</p>
+
+                    <input type="number" name="daily_price" id="daily_price"
+                        value="{{ old('daily_price') }}"
+                        class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50">
+
+                    @error('price')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
+
+                <!-- Total Price -->
+                <div class="col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100 mt-2">
+
+                    <label class="block text-sm font-semibold text-blue-800 mb-2">
+                        Prix Total (DH)
+                    </label>
+
+                    <input type="number" name="price" id="total_price"
+                        step="0.01" readonly
+                        value="{{ old('price') }}"
+                        class="w-full bg-white border-blue-200 rounded-lg text-xl font-bold text-blue-700 p-3 shadow-inner cursor-not-allowed
+                        @error('price') border-red-500 @enderror">
+
+
+
+                    <p class="text-xs text-blue-600 mt-2 italic">
+                        * Le prix est calculé automatiquement selon la durée.
+                    </p>
+                </div>
+
             </div>
 
-            <!-- Boutons d'action -->
+            <!-- Buttons -->
             <div class="mt-8 flex items-center justify-end gap-4 border-t pt-6">
-                <a href="{{ route('cars') }}" class="text-gray-600 hover:text-gray-800 font-medium">Annuler</a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center gap-2">
-                    <i data-lucide="check-circle" class="w-5 h-5"></i> Finaliser le Contrat
+
+                <a href="{{ route('cars') }}"
+                   class="text-gray-600 hover:text-gray-800 font-medium">
+                    Annuler
+                </a>
+
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105">
+                    Finaliser le Contrat
                 </button>
+
             </div>
+
         </form>
+
     </div>
 </div>
 
-<!-- SCRIPT DE CALCUL AUTOMATIQUE -->
+<!-- SCRIPT CALCUL AUTOMATIQUE -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const carSelect = document.getElementById('car_select');
-        const dateStart = document.getElementById('date_start');
-        const dateEnd = document.getElementById('date_end');
-        const totalPrice = document.getElementById('total_price');
+document.addEventListener('DOMContentLoaded', function () {
 
-        function calculatePrice() {
-            const selectedCar = carSelect.options[carSelect.selectedIndex];
-            const pricePerDay = selectedCar ? selectedCar.getAttribute('data-price') : 0;
-            
-            const start = new Date(dateStart.value);
-            const end = new Date(dateEnd.value);
+    const dailyPrice = document.getElementById('daily_price');
+    const dateStart = document.getElementById('date_start');
+    const dateEnd = document.getElementById('date_end');
+    const totalPrice = document.getElementById('total_price');
+    const previewTotal = document.getElementById('preview_total');
 
-            if (start && end && end > start && pricePerDay) {
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                totalPrice.value = (diffDays * pricePerDay).toFixed(2);
-            } else {
-                totalPrice.value = 0;
-            }
+    function calculateTotal() {
+
+        const price = parseFloat(dailyPrice.value) || 0;
+
+        const start = new Date(dateStart.value);
+        const end = new Date(dateEnd.value);
+
+        if (start && end && end > start && price > 0) {
+
+            const diffTime = end - start;
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            const total = days * price;
+
+            totalPrice.value = total.toFixed(2);
+            previewTotal.innerText = total.toFixed(2);
+
+        } else {
+            totalPrice.value = 0;
+            previewTotal.innerText = 0;
         }
+    }
 
-        [carSelect, dateStart, dateEnd].forEach(el => el.addEventListener('change', calculatePrice));
+    [dailyPrice, dateStart, dateEnd].forEach(el => {
+        el.addEventListener('input', calculateTotal);
+        el.addEventListener('change', calculateTotal);
     });
+
+});
 </script>
 
 @endsection
