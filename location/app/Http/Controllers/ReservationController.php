@@ -112,10 +112,10 @@ public function store(Request $request)
                         ->with('success', 'La réservation a été modifiée avec succès.');
     }
 
-    public function show(Reservation $reservation)
+    public function show($id)
 {
-    // On charge les relations pour afficher le nom du client, la marque de la voiture, etc.
-    $reservation->load(['client', 'car', 'user']);
+    // On récupère la réservation avec ses relations
+    $reservation = Reservation::with(['client', 'car'])->findOrFail($id);
 
     return view('reservations.show', compact('reservation'));
 }

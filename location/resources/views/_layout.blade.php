@@ -83,13 +83,57 @@
         </nav>
     </aside>
 
-    <!-- MAIN -->
-    <main class="flex-1 p-6 ml-0 md:ml-64">
-        @yield('content')
-    </main>
+    <div class="flex-1 flex flex-col ml-0 md:ml-64 min-h-screen">
+        
+        <main class="p-6 flex-grow bg-gray-100">
+            @if(session('success'))
+                @endif
+            
+            <!-- btn success -->
+
+        @if(session('success'))
+            <div class="max-w-4xl mx-auto mt-4">
+                <div class="flex items-center gap-3 bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <span class="font-medium">{{ session('success') }}</span>
+                    
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-green-500 hover:text-green-700">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div><br>
+            </div>
+            
+        @endif
+        @if(session('error'))
+            <div class="max-w-4xl mx-auto mt-4">
+                <div class="flex items-center gap-3 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl shadow-sm">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                    <span class="font-medium">{{ session('error') }}</span>
+                </div>
+            </div><br>
+            
+        @endif
+
+            @yield('content')
+        </main>
+
+        <footer class="bg-white border-t border-gray-200 py-4 px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                    <i data-lucide="car" class="w-4 h-4 text-blue-600"></i>
+                    <span>&copy; {{ date('Y') }} AutoLoc. Sefrou, Maroc.</span>
+                </div>
+                
+                <div class="flex gap-6 items-center">
+                    <a href="#" class="text-xs text-gray-400 hover:text-blue-600 transition">Aide</a>
+                    <a href="#" class="text-xs text-gray-400 hover:text-blue-600 transition">Contact</a>
+                    <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded">V 1.0</span>
+                </div>
+            </div>
+        </footer>
+    </div>
 
 </div>
-
 <script>
     // Initialisation des icônes Lucide
     lucide.createIcons();
@@ -104,6 +148,6 @@
         menu.classList.toggle('hidden');
     }
 </script>
-
+    
 </body>
 </html>

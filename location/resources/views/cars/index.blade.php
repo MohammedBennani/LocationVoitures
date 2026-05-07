@@ -35,7 +35,9 @@
 
 </form>
 
-<a href="{{route('cars.add')}}">Ajouter</a>
+    <a href="{{ route('reservations.create') }}" style="margin-left: 25px" class="w-fit bg-blue-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-all">
+    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nouveau Contrat
+</a>
 @if(session('success'))
     <div class="max-w-4xl mx-auto mb-4">
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
@@ -93,7 +95,10 @@
                     <p class="text-xs text-gray-400">
                         Immatriculation : {{ $car->registration }}
                     </p>
-                    <a href="{{route('cars.show',$car->id)}}">Détail</a>
+                    <a href="{{route('cars.show',$car->id)}}" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm text-xs font-medium">
+                    <i data-lucide="folder-open" class="w-3.5 h-3.5 mr-1.5"></i>
+                        Détail
+                    </a>
                 </div>
 
             </div>

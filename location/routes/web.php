@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/clients/{client}/edit', 'edit')->name('clients.edit');
         Route::put('/clients/{client}', 'update')->name('clients.update');
         Route::get('/clients/{id}', 'show')->name('clients.show');
+        Route::delete('/clients/{client}', 'destroy')->name('clients.destroy');
     });
 
     // Gestion des Réservations
