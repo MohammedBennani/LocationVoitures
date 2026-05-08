@@ -11,11 +11,41 @@ class MaintenancesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(string $id)
-    {
-        $car = Car::with('maintenances')->findOrFail($id);
-        return view('maintenances.index',compact('car'));
+   public function index(Request $request, string $id)
+{
+    $car = Car::findOrFail($id);
+
+    $maintenances = Maintenance::where('car_id', $id);
+
+    // DATE START
+    if ($request->filled('date_start')) {
+
+        $maintenances->whereDate(
+            'maintenance_date',
+            '>=',
+            $request->date_start
+        );
     }
+
+    // DATE END
+    if ($request->filled('date_end')) {
+
+        $maintenances->whereDate(
+            'maintenance_date',
+            '<=',
+            $request->date_end
+        );
+    }
+
+    $maintenances = $maintenances
+        ->latest('maintenance_date')
+        ->get();
+
+    return view('maintenances.index', compact(
+        'car',
+        'maintenances'
+    ));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -23,7 +53,7 @@ class MaintenancesController extends Controller
    public function create(string $id)
 {
     $car = Car::findOrFail($id);
-    return view('maintenances.create', compact('car'));
+    return view('maintenance.create', compact('car'));
 }
 
     /**

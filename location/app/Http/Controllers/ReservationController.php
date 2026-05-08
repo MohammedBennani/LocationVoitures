@@ -110,12 +110,6 @@ public function index(Request $request)
             ->with('success', 'Contrat créé avec succès');
     }
 
-<<<<<<< HEAD
-    public function show($id)
-{
-    // On récupère la réservation avec ses relations
-    $reservation = Reservation::with(['client', 'car'])->findOrFail($id);
-=======
     /**
      * Détails réservation
      */
@@ -124,7 +118,6 @@ public function index(Request $request)
         $reservation = Reservation::withTrashed()
             ->with(['client', 'car'])
             ->findOrFail($id);
->>>>>>> 3194abe (Reservation amelioration)
 
         return view('reservations.show', compact('reservation'));
     }
