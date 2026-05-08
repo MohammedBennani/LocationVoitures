@@ -35,20 +35,9 @@
 
 </form>
 
-    <a href="{{ route('reservations.create') }}" style="margin-left: 25px" class="w-fit bg-blue-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-all">
-    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nouveau Contrat
+    <a href="{{ route('cars.add') }}" style="margin-left: 25px" class="w-fit bg-blue-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-all">
+    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nouveau Voiture
 </a>
-@if(session('success'))
-    <div class="max-w-4xl mx-auto mb-4">
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
-
-            <i data-lucide="check-circle" class="w-5 h-5"></i>
-
-            <span>{{ session('success') }}</span>
-
-        </div>
-    </div>
-@endif
 
 <div class="p-4 sm:p-6">
     
